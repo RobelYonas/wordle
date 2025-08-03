@@ -5,25 +5,30 @@ word = words.get_word()
 guessedWord = ['_']*len(word)
 
 attempts = 10
-word_used = set()
 
 while attempts > 0:
 
     print("\nCurrent word "+"".join(guessedWord))
-    print("Letters guessed: " + ", ".join(word_used))
 
-    guess = input("Your guess; ").lower()
+    while True:
+        guess = input("Your guess; ").lower()
+        if words.check_word(guess):
+            break
+        else:
+            print("Enter a real word")
 
-    if guess in word:
-        for i in range(len(word)):
-            if word[i] == guess:
-                guessedWord[i] = guess
+    list_word = set(guess)
+
+    if any(letter in word for letter in list_word):
+        for letter in list_word:
+            if letter in word:
+                indices = []
+                for index, value in enumerate(word):
+                    if value == letter:
+                        guessedWord[index] = letter
         print('Good guess')
-    else:
         attempts -= 1
-        print("Wrong guess. Left attemps: " + str(attempts))
-
-    word_used.add(guess)
+        print("Attempts left: " + attempts)
 
     if '_' not in guessedWord:
         print("\nCongratulations!! You guessed the word: " + word)
