@@ -1,26 +1,33 @@
 import words
+from rich.console import Console
+
+console = Console(width=40)
 
 
 def similarity(word, guess):
 
-    result = {}
+    for i in guess:
+        styled = []
 
-    correct_letter = {(i, letter)
-                      for i, (letter, correct) in enumerate(zip(guess, word))
-                      if letter == correct}
-    only_letter_correct = {letter for _, letter in correct_letter}
-    misplaced_letter = (set(guess) & set(word)) - only_letter_correct
-    mistake = set(word) - set(guess)
+        for letter, correct in zip(guess, word):
+            if letter == correct:
+                style = "bold white on green"
+            elif letter in correct:
+                style = "bold white on yellow"
+            else:
+                style = "white on #666666"
+            styled.append(f"[{style}]{letter}[/]")
 
-    result["correct"] = only_letter_correct
-    result["misplaced"] = misplaced_letter
-    result["wrong"] = mistake
-
-    return result, correct_letter
+        console.print("".join(styled), justify="center")
 
 
 def game_over(word):
     print(f"The word was {word}")
+
+
+def refresh_page(headline):
+    console.clear()
+    console.rule(f"[bold blue]:leafy_green: {headline} :leafy_green:[/]\n")
 
 
 def main():
@@ -30,21 +37,14 @@ def main():
     guess_words = ['_' * len(word)]*5
 
     while valid_guess > 0:
-        guess = words.check_word()
-
-        for i in range(6):
-            guess_words[i] = guess.upper()
-            result, correct_word = similarity(guess, word)
-
-        for index, letter in correct_word:
-            guess_words[index] = letter
-        print(guess_words)
-        print(f"Misplaced: {result['misplaced']}, Wrong: {result['wrong']}")
-
-        if guess == word:
+        i = 0
+        refresh_page(headline="Guess")
+        guess_words[i] = words.check_word()
+        similarity(guess_words[i], word)
+        if guess_words[i] == word:
             print("Correct answer")
             break
-
+        ++i
     game_over(word)
 
 
