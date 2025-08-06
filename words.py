@@ -8,9 +8,9 @@ def get_word():
     return "".join(response.json())
 
 
-def check_word():
+def check_word(previous_word):
     while True:
         word = input("Enter the word: ").lower()
-        if requests.get(f"https://api.dictionaryapi.dev/api/v2/entries/en/{word}").status_code == 200:
+        if requests.get(f"https://api.dictionaryapi.dev/api/v2/entries/en/{word}").status_code == 200 and word not in previous_word:
             return word
-        print("Invalid word")
+        print("Invalid word or repeated")

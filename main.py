@@ -4,19 +4,22 @@ from rich.console import Console
 console = Console(width=40)
 
 
-def similarity(word, guess):
+def similarity(guesses, word):
 
-    for i in guess:
+    for guess in guesses:
         styled = []
-
-        for letter, correct in zip(guess, word):
-            if letter == correct:
-                style = "bold white on green"
-            elif letter in correct:
-                style = "bold white on yellow"
-            else:
-                style = "white on #666666"
-            styled.append(f"[{style}]{letter}[/]")
+        if "_" in guess:
+            for _ in range(len(word)):
+                styled.append("[white on #222222]_[/]")
+        else:
+            for letter, correct in zip(guess, word):
+                if letter == correct:
+                    style = "bold white on green"
+                elif letter in word:
+                    style = "bold white on yellow"
+                else:
+                    style = "white on #666666"
+                styled.append(f"[{style}]{letter}[/]")
 
         console.print("".join(styled), justify="center")
 
@@ -32,19 +35,19 @@ def refresh_page(headline):
 
 def main():
 
-    valid_guess = 5
     word = words.get_word()
     guess_words = ['_' * len(word)]*5
+    previous_words = []
 
-    while valid_guess > 0:
-        i = 0
-        refresh_page(headline="Guess")
-        guess_words[i] = words.check_word()
-        similarity(guess_words[i], word)
+    for i in range(5):
+        refresh_page(headline=f"Guess {i + 1}")
+        similarity(guess_words, word)
+        guess = words.check_word(previous_words)
+        previous_words.append(guess)
+        guess_words[i] = guess
         if guess_words[i] == word:
             print("Correct answer")
             break
-        ++i
     game_over(word)
 
 
